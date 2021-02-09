@@ -7,11 +7,14 @@
 #define SPEC_VIDEO       A3
 #define WHITE_LED        A4
 #define LASER_404        A5
+#define BUTTON           8
 
 #define SPEC_CHANNELS    288 // New Spec Channel
 uint16_t data[SPEC_CHANNELS];
 
 void setup(){
+  //Set button pin to INPUT
+  pinMode(BUTTON, INPUT_PULLUP);
 
   //Set desired pins to OUTPUT
   pinMode(SPEC_CLK, OUTPUT);
@@ -119,9 +122,11 @@ void printData(){
 }
 
 void loop(){
-   
-  readSpectrometer();
-  printData();
-  delay(100);  
-   
+  if (digitalRead(BUTTON) == LOW){  // Switch ON
+    readSpectrometer();
+    printData();
+    delay(100);
+  }
+  else{   // Switch OFF
+  }
 }
