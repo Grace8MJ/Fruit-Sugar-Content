@@ -1,6 +1,3 @@
-/*
- * Macro Definitions
- */
 #define SPEC_TRG         A0
 #define SPEC_ST          A1
 #define SPEC_CLK         A2
@@ -9,15 +6,13 @@
 #define LASER_404        A5
 #define BUTTON           8
 
-#define SPEC_CHANNELS    288 // New Spec Channel
+#define SPEC_CHANNELS    511 // New Spec Channel
 uint16_t data[SPEC_CHANNELS];
 
 void setup(){
-  //Set button pin to INPUT
-  pinMode(BUTTON, INPUT_PULLUP);
+  pinMode(BUTTON, INPUT_PULLUP); // Set button pin to INPUT
 
-  //Set desired pins to OUTPUT
-  pinMode(SPEC_CLK, OUTPUT);
+  pinMode(SPEC_CLK, OUTPUT); // Set pins to OUTPUT
   pinMode(SPEC_ST, OUTPUT);
   pinMode(LASER_404, OUTPUT);
   pinMode(WHITE_LED, OUTPUT);
@@ -26,15 +21,10 @@ void setup(){
   digitalWrite(SPEC_ST, LOW); // Set SPEC_ST Low
 
   Serial.begin(115200); // Baud Rate set to 115200
-  
 }
 
-/*
- * This functions reads spectrometer data from SPEC_VIDEO
- * Look at the Timing Chart in the Datasheet for more info
- */
 void readSpectrometer(){
-
+	// reads spectrometer data from SPEC_VIDEO (c.f. Timing Chart below)
   int delayTime = 1; // delay time
 
   // Start clock cycle and set start pulse to signal start
@@ -48,25 +38,20 @@ void readSpectrometer(){
 
   //Sample for a period of time
   for(int i = 0; i < 15; i++){
-
       digitalWrite(SPEC_CLK, HIGH);
       delayMicroseconds(delayTime);
       digitalWrite(SPEC_CLK, LOW);
       delayMicroseconds(delayTime); 
- 
   }
 
-  //Set SPEC_ST to low
-  digitalWrite(SPEC_ST, LOW);
+  digitalWrite(SPEC_ST, LOW); // Set SPEC_ST to low
 
   //Sample for a period of time
   for(int i = 0; i < 85; i++){
-
       digitalWrite(SPEC_CLK, HIGH);
       delayMicroseconds(delayTime);
       digitalWrite(SPEC_CLK, LOW);
-      delayMicroseconds(delayTime); 
-      
+      delayMicroseconds(delayTime);
   }
 
   //One more clock pulse before the actual read
@@ -77,47 +62,35 @@ void readSpectrometer(){
 
   //Read from SPEC_VIDEO
   for(int i = 0; i < SPEC_CHANNELS; i++){
-
       data[i] = analogRead(SPEC_VIDEO);
       
       digitalWrite(SPEC_CLK, HIGH);
       delayMicroseconds(delayTime);
       digitalWrite(SPEC_CLK, LOW);
       delayMicroseconds(delayTime);
-        
   }
 
-  //Set SPEC_ST to high
-  digitalWrite(SPEC_ST, HIGH);
+  digitalWrite(SPEC_ST, HIGH); // Set SPEC_ST to high
 
   //Sample for a small amount of time
   for(int i = 0; i < 7; i++){
-    
       digitalWrite(SPEC_CLK, HIGH);
       delayMicroseconds(delayTime);
       digitalWrite(SPEC_CLK, LOW);
       delayMicroseconds(delayTime);
-    
   }
 
   digitalWrite(SPEC_CLK, HIGH);
   delayMicroseconds(delayTime);
-  
 }
 
-/*
- * The function below prints out data to the terminal or 
- * processing plot
- */
+
 void printData(){
-  
+  //prints out data to the terminal or processing plot
   for (int i = 0; i < SPEC_CHANNELS; i++){
-    
     Serial.print(data[i]);
     Serial.print(',');
-    
   }
-  
   Serial.print("\n");
 }
 
